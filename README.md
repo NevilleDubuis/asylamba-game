@@ -17,6 +17,77 @@ Dépendances
 - MySQL 5.5.49
 - Composer
 
+Installation de l'environement de developement (debian/ubuntu)
+--------------------------------------------------------------
+
+Installation des paquets requis avec apt-get
+
+```sh
+sudo apt-get install apache2 apache2-utils php5 mysql-server libapache2-mod-php php-mysql
+```
+
+Pour utiliser asylamba il est nécessaire d'activer le module `rewrite` d'Apache, ainsi que le module `mcrypt` de php
+
+```sh
+sudo a2enmod rewrie
+sudo php5enmode mcrypt
+```
+
+Aller dans le dossier de configuration d'Apache (`/etc/apache2/`) et créer un fichiers dans le dossier `sites-available`
+
+```sh
+cd /etc/apache2/
+sudo touch sites-available/asylamanba.local.conf
+```
+
+éditer ce fichier avec les droits root et mettez y le contenu suivant:
+
+```conf
+<VirtualHost *:80>
+    ServerAdmin webmaster@sites-testing
+    ServerName  asylamba.local
+
+    # Indexes + Directory Root.
+    DocumentRoot /var/www/asylamba-game/
+
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride All
+	</Directory>
+
+	<Directory /var/www/asylamba-game/>
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+	
+</VirtualHost>
+```
+
+ensuite cloner le repository dans /var/www/asyalamba-game. Ou le copier dans votre home et faite un lien symbolique. par exemple :
+
+```sh
+cd ~/Dev
+git clone git@github.com:rtfmcorp/asylamba-game.git
+sudo ln -s ~/Dev/asylamba-game /var/www
+```
+
+puis activer le site asylamba.local, et redémarrer apache
+
+```sh
+sudo a2ensite asylamba.local
+sudo apache2ctl restart
+```
+
+ensuite utiliser mysql pour créer une base de données 
+
+```sh 
+mysql -u root
+CREATE DATABASE ayslamba-game;
+\q
+```
+
 Installation
 ------------
 
