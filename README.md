@@ -7,7 +7,7 @@ Jeu de stragégie en ligne multi-joueur. Visitez [asylamba.com](http://asylamba.
 
 ![logo Asylamba](http://asylamba.com/public/media/files/sources/asylambacom.png)
 
-For the english version, follow this link : [English version](README.en.md) 
+For the english version, follow this link : [English version](README.en.md)
 
 Dépendances
 -----------
@@ -23,7 +23,7 @@ Installation de l'environement de developement (debian/ubuntu)
 Installation des paquets requis avec apt-get
 
 ```sh
-sudo apt-get install apache2 apache2-utils php5 mysql-server libapache2-mod-php php-mysql
+sudo apt-get install apache2 apache2-utils php5 mysql-server libapache2-mod-php php-mysql git
 ```
 
 Pour utiliser asylamba il est nécessaire d'activer le module `rewrite` d'Apache, ainsi que le module `mcrypt` de php
@@ -33,39 +33,56 @@ sudo a2enmod rewrie
 sudo php5enmode mcrypt
 ```
 
-Aller dans le dossier de configuration d'Apache (`/etc/apache2/`) et créer un fichiers dans le dossier `sites-available`
+Allez dans le dossier de configuration d'Apache (`/etc/apache2/`) et créer un fichiers dans le dossier `sites-available`
 
 ```sh
 cd /etc/apache2/
-sudo touch sites-available/asylamanba.local.conf
+sudo touch sites-available/asylamba.conf
 ```
 
 éditer ce fichier avec les droits root et mettez y le contenu suivant:
 
 ```conf
 <VirtualHost *:80>
-    ServerAdmin webmaster@sites-testing
-    ServerName  asylamba.local
+        ServerName  www.asylamba.local
+        ServerAlias asylamba.local
+        ServerAlias *.asylamba.local
 
-    # Indexes + Directory Root.
-    DocumentRoot /var/www/asylamba-game/
+        DocumentRoot /var/www/asylamba-game
+        DirectoryIndex index.php
 
-	<Directory />
-		Options FollowSymLinks
-		AllowOverride All
-	</Directory>
+        <Directory />
+                Options FollowSymLinks MultiViews
+                AllowOverride All
+        </Directory>
 
-	<Directory /var/www/asylamba-game/>
-		Options Indexes FollowSymLinks MultiViews
-		AllowOverride All
-		Order allow,deny
-		allow from all
-	</Directory>
-	
+
+        <Directory /var/www/asylamba-game>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride All
+                Order allow,deny
+                allow from all
+        </Directory>
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel notice
+
+        ErrorLog ${APACHE_LOG_DIR}/asylamba-error.log
+        CustomLog ${APACHE_LOG_DIR}/asylamaba-access.log combined
 </VirtualHost>
+
 ```
 
-ensuite cloner le repository dans /var/www/asyalamba-game. Ou le copier dans votre home et faite un lien symbolique. par exemple :
+ensuite clonez le repository dans /var/www
+
+```sh
+cd /var/www
+sudo git clone git@github.com:rtfmcorp/asylamba-game.git
+(sudo chown -R *nom_du_user* asylamba-game )
+```
+
+**OU** copiez le dans votre home et faite lien symbolique. par exemple :
 
 ```sh
 cd ~/Dev
@@ -73,20 +90,34 @@ git clone git@github.com:rtfmcorp/asylamba-game.git
 sudo ln -s ~/Dev/asylamba-game /var/www
 ```
 
-puis activer le site asylamba.local, et redémarrer apache
+puis activez le site asylamba et redémarrez apache
 
 ```sh
 sudo a2ensite asylamba.local
 sudo apache2ctl restart
 ```
 
-ensuite utiliser mysql pour créer une base de données 
+ensuite utilisez mysql pour créer une base de données pour asylamba
 
-```sh 
-mysql -u root
+```sh
+mysql -u *user* -p
 CREATE DATABASE ayslamba-game;
 \q
 ```
+
+créer un alias dans `/etc/hosts` :
+
+```
+127.0.0.1	asylamba.local
+```
+
+retourner dans votre home pour installer [Composer](https://getcomposer.org/install), une fois le scirpt de download executer déplacer `composer.phar` dans `~/bin/composer. Retournez ensuite dans le dossier d'Asylamba et lancer :
+
+```sh
+composer install
+```
+
+Votre environement est maintenant prêt !
 
 Installation
 ------------
